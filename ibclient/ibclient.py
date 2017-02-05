@@ -3,7 +3,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 
-class Client(object):
+class IBClient(object):
 
     def __init__(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
         """
