@@ -71,7 +71,8 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?contains_address=" + ip_address + "&return_fields=" + fields
-        return self._get(frag)
+        record = self._get(frag)
+        return record.json()
 
     def get_network_container(self, network):
         """
