@@ -125,7 +125,7 @@ class IBClient(object):
             fields = "network,netmask"
         frag = "network?network=" + network + "&_return_fields=" + fields
         results = self._get(frag)
-        return results.json()
+        return results
 
     def get_network_by_ip(self, ip_address, fields=None):
         """
