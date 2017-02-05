@@ -3,7 +3,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 
-class InfobloxAPI(object):
+class IBClient(object):
 
     def init(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
         """
