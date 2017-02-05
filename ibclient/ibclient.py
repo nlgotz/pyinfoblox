@@ -22,7 +22,7 @@ class IBClient(object):
         Sends GET requests to Infoblox Server
         """
         try:
-            r = requests.get(self.url + frag, verify=self.verify_ssl, auth=self.credentials)
+            r = requests.get(self.rest_url + frag, verify=self.verify_ssl, auth=self.credentials)
             r_json = r.json()
             if r.status_code == 200:
                 if len(r_json) > 0:
