@@ -3,15 +3,22 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 
-class IBClient(object):
+class InfobloxAPI(object):
 
-    def __init__(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
+    def init(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
         """
         Class initialization method
+        :param server: Infoblox Gridmaster server (either IP or DNS)
+        :param username: Username to log into Infoblox
+        :param password: password for username
+        :param api_version: Infoblox API version
+        :param dns_view: DNS View
+        :param network_view: Network View
+        :param verify_ssl: Verify SSL connection
+        :type verify_ssl: Boolean
         """
         self.server = server
-        self.username = username
-        self.password = password
+        self.credentials = (username, password)
         self.dns_view = dns_view
         self.network_view = network_view
         self.verify_ssl = verify_ssl
@@ -23,8 +30,18 @@ class IBClient(object):
         Sends GET requests to Infoblox Server
         """
         try:
-            r = requests.get(self.rest_url + frag, verify=self.verify_ssl, auth=(self.username, self.password))
-            return r
+            r = requests.get(self.url + frag, verify=self.verify_ssl, auth=self.credentials)
+            r_json = r.json()
+            if r.status_code == 200:
+                if len(r_json) > 0:
+                    return r_json[0]
+                else:
+                    raise Exception("No object found for: " + frag)
+            else:
+                if 'text' in r_json:
+                    raise Exception(r_json['text'])
+                else:
+                    r.raise_for_status()
         except ValueError:
             raise Exception(r)
         except Exception:
@@ -32,21 +49,71 @@ class IBClient(object):
 
     def _post(self, frag, data=None):
         """
-        Sends POST requests to Infoblox Server
+        Sends POST requests to Infoblox Server.
+        Creates a new Infoblox object
         """
-        return False
+        try:
+            r = requests.post(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
+            r_json = r.json()
+            if r.status_code == 201:
+                if len(r_json) > 0:
+                    return r_json[0]
+                else:
+                    raise Exception("No object returned for: " + frag)
+            else:
+                if 'text' in r_json:
+                    raise Exception(r_json['text'])
+                else:
+                    r.raise_for_status()
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
 
     def _put(self, frag, data=None):
         """
         Sends PUT requests to Infoblox Server
+        Updates an existing Infoblox object
         """
-        return False
+        try:
+            r = requests.put(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
+            r_json = r.json()
+            if r.status_code == 200:
+                if len(r_json) > 0:
+                    return r_json[0]
+                else:
+                    raise Exception("Error with: " + frag)
+            else:
+                if 'text' in r_json:
+                    raise Exception(r_json['text'])
+                else:
+                    r.raise_for_status()
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
 
     def _delete(self, frag, data=None):
         """
         Sends DELETE requests to Infoblox Server
         """
-        return False
+        try:
+            r = requests.delete(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
+            r_json = r.json()
+            if r.status_code == 200:
+                if len(r_json) > 0:
+                    return r_json[0]
+                else:
+                    raise Exception("Error with: " + frag)
+            else:
+                if 'text' in r_json:
+                    raise Exception(r_json['text'])
+                else:
+                    r.raise_for_status()
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
 
     def get_network(self, network, fields=None):
         """
@@ -57,10 +124,8 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?network=" + network + "&_return_fields=" + fields
-
-        record = self._get(frag)
-
-        return record.json()
+        results = self._get(frag)
+        return results.json()
 
     def get_network_by_ip(self, ip_address, fields=None):
         """
@@ -71,16 +136,17 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
-        record = self._get(frag)
-        return record.json()
+        return _get(frag)
 
-    def get_network_container(self, network):
+    def get_network_container(self, network, fields=None):
         """
         Gets the Network Container object
         :param network_container: network in CIDR format (x.x.x.x/yy)
         """
         frag = "network_container?network=" + network
-        return self._get(frag)
+        if fields:
+            frag += "&_return_fields=" + fields
+        return _get(frag)
 
     def get_dns_record(self, type, record, fields=None):
         """
@@ -92,7 +158,7 @@ class IBClient(object):
         frag = "record:" + type + "?record=" + record
         if fields:
             frag += "&_return_fields=" + fields
-        return self._get(frag)
+        return _get(frag)
 
     def get_fixedaddress(self, address):
         """
@@ -100,7 +166,7 @@ class IBClient(object):
         :param address: IP Address of the object
         """
         frag = "fixedaddress?ipv4addr=" + address
-        return self._get(frag)
+        return _get(frag)
 
     def get_fixedaddress_by_mac(self, mac_address):
         """
@@ -108,4 +174,47 @@ class IBClient(object):
         :param mac_address:
         """
         frag = "fixedaddress?mac=" + mac_address
-        return self._get(frag)
+        return _get(frag)
+
+    def create_network(self, network, comment, fields):
+        """
+        Creates a new network
+        """
+        frag = ""
+        data = ""
+        return _post(frag, data)
+
+    def create_network_container(self):
+        return False
+
+    def create_dhcp_range(self):
+        return False
+
+    def create_fixedaddress(self):
+        return False
+
+    def create_dns_record(self):
+        """
+        Create a new DNS Record. This creates both the A and PTR records
+        """
+        return False
+
+    # update functions to be defined below here
+
+    def delete_network(self):
+        return False
+
+    def delete_network_container(self):
+        return False
+
+    def delete_dhcp_range(self):
+        return False
+
+    def delete_fixedaddress(self):
+        return False
+
+    def delete_fixedaddress_by_mac(self):
+        return False
+
+    def delete_dns_record(self):
+        return False
