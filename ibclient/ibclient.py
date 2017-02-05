@@ -154,7 +154,7 @@ class IBClient(object):
         :param name: Record name
         :param fields: comma separated list of field names (optional)
         """
-        frag = "record:" + type + "?record=" + record
+        frag = "record:" + type + "?name=" + record
         if fields:
             frag += "&_return_fields=" + fields
         return self._get(frag)
