@@ -10,7 +10,8 @@ class IBClient(object):
         Class initialization method
         """
         self.server = server
-        self.credentials = (username, password)
+        self.username = username
+        self.password = password
         self.dns_view = dns_view
         self.network_view = network_view
         self.verify_ssl = verify_ssl
@@ -22,8 +23,8 @@ class IBClient(object):
         Sends GET requests to Infoblox Server
         """
         try:
-            r = requests.get(self.rest_url + frag, verify=self.verify_ssl, auth=self.credentials)
-            return r.json()
+            r = requests.get(self.rest_url + frag, verify=self.verify_ssl, auth=(self.username, self.password))
+            return r
         except ValueError:
             raise Exception(r)
         except Exception:
@@ -56,7 +57,10 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?network=" + network + "&return_fields=" + fields
-        return self._get(frag)
+
+        record = self._get(frag)
+
+        return record.json()
 
     def get_network_by_ip(self, ip_address, fields=None):
         """
