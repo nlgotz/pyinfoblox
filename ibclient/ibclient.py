@@ -56,7 +56,7 @@ class IBClient(object):
         """
         if not fields:
             fields = "network,netmask"
-        frag = "network?network=" + network + "&return_fields=" + fields
+        frag = "network?network=" + network + "&_return_fields=" + fields
 
         record = self._get(frag)
 
