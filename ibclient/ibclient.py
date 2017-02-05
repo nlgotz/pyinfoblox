@@ -23,17 +23,7 @@ class IBClient(object):
         """
         try:
             r = requests.get(self.rest_url + frag, verify=self.verify_ssl, auth=self.credentials)
-            r_json = r.json()
-            if r.status_code == 200:
-                if len(r_json) > 0:
-                    return r_json[0]
-                else:
-                    raise Exception("No object found for: " + frag)
-            else:
-                if 'text' in r_json:
-                    raise Exception(r_json['text'])
-                else:
-                    r.raise_for_status()
+            return r.json()
         except ValueError:
             raise Exception(r)
         except Exception:
