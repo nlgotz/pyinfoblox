@@ -135,7 +135,7 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
-        return _get(frag)
+        return self._get(frag)
 
     def get_network_container(self, network, fields=None):
         """
@@ -145,7 +145,7 @@ class IBClient(object):
         frag = "network_container?network=" + network
         if fields:
             frag += "&_return_fields=" + fields
-        return _get(frag)
+        return self._get(frag)
 
     def get_dns_record(self, type, record, fields=None):
         """
@@ -157,7 +157,7 @@ class IBClient(object):
         frag = "record:" + type + "?record=" + record
         if fields:
             frag += "&_return_fields=" + fields
-        return _get(frag)
+        return self._get(frag)
 
     def get_fixedaddress(self, address):
         """
@@ -165,7 +165,7 @@ class IBClient(object):
         :param address: IP Address of the object
         """
         frag = "fixedaddress?ipv4addr=" + address
-        return _get(frag)
+        return self._get(frag)
 
     def get_fixedaddress_by_mac(self, mac_address):
         """
@@ -173,7 +173,7 @@ class IBClient(object):
         :param mac_address:
         """
         frag = "fixedaddress?mac=" + mac_address
-        return _get(frag)
+        return self._get(frag)
 
     def create_network(self, network, comment, fields):
         """
