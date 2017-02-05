@@ -159,12 +159,14 @@ class IBClient(object):
             frag += "&_return_fields=" + fields
         return self._get(frag)
 
-    def get_fixedaddress(self, address):
+    def get_fixedaddress(self, address, fields=None):
         """
         Gets the Fixed Address Object
         :param address: IP Address of the object
         """
-        frag = "fixedaddress?ipv4addr=" + address
+        if not fields:
+            fields = "ipv4addr,mac"
+        frag = "fixedaddress?ipv4addr=" + address + "&_return_fields=" + fields
         return self._get(frag)
 
     def get_fixedaddress_by_mac(self, mac_address):
@@ -172,7 +174,9 @@ class IBClient(object):
         Gets the Fixed Address Object by MAC Address
         :param mac_address:
         """
-        frag = "fixedaddress?mac=" + mac_address
+        if not fields:
+            fields = "ipv4addr,mac"
+        frag = "fixedaddress?mac=" + mac_address + "&_return_fields=" + fields
         return self._get(frag)
 
     def create_network(self, network, comment, fields):
