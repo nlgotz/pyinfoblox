@@ -124,8 +124,7 @@ class IBClient(object):
         if not fields:
             fields = "network,netmask"
         frag = "network?network=" + network + "&_return_fields=" + fields
-        results = self._get(frag)
-        return results
+        return self._get(frag)
 
     def get_network_by_ip(self, ip_address, fields=None):
         """
