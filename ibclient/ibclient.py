@@ -1,4 +1,5 @@
 import requests
+import json
 
 requests.packages.urllib3.disable_warnings()
 
@@ -119,8 +120,16 @@ class IBClient(object):
         """
         Gets the Member Servers
         """
-        frag = "memberserver"
+        frag = "member"
         return self._get(frag)
+
+    def get_dhcp_servers(self):
+        """
+        Gets the DHCP Servers
+        """
+        frag = "member:dhcpproperties?_return_fields=enable_dhcp,host_name,ipv4addr"
+        results = json.load(self.get(frag))
+        return results
 
     def get_network(self, network, fields=None):
         """
