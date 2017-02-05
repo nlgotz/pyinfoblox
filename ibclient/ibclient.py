@@ -115,6 +115,13 @@ class IBClient(object):
         except Exception:
             raise
 
+    def get_memberservers(self):
+        """
+        Gets the Member Servers
+        """
+        frag = "memberserver"
+        return self._get(frag)
+
     def get_network(self, network, fields=None):
         """
         Gets the Network object
