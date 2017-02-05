@@ -70,7 +70,7 @@ class IBClient(object):
         """
         if not fields:
             fields = "network,netmask"
-        frag = "network?contains_address=" + ip_address + "&return_fields=" + fields
+        frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
         record = self._get(frag)
         return record.json()
 
@@ -91,7 +91,7 @@ class IBClient(object):
         """
         frag = "record:" + type + "?record=" + record
         if fields:
-            frag += "&return_fields=" + fields
+            frag += "&_return_fields=" + fields
         return self._get(frag)
 
     def get_fixedaddress(self, address):
