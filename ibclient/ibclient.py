@@ -15,8 +15,7 @@ class IBClient(object):
         self.network_view = network_view
         self.verify_ssl = verify_ssl
         self.api_version = api_version
-        self.rest_url = "https://" + self.server + "/wapi/v"
-        + self.api_version + "/"
+        self.rest_url = "https://{0}/wapi/v{1}/".format(self.server, self.api_version)
 
     def _get(self, frag):
         """
