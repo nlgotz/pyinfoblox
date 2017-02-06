@@ -168,7 +168,7 @@ class IBClient(object):
 
         record = self._post(ref + '/?_function=next_available_network&cidr=' + str(cidr) + '&num=1', '')
 
-        return record.json()['networks'][0]
+        return record
 
     def get_network_container(self, network, fields=None):
         """
