@@ -115,6 +115,8 @@ class IBClient(object):
         except Exception:
             raise
 
+    # Get Functions
+
     def get_memberservers(self):
         """
         Gets all of the member Infoblox servers
@@ -217,13 +219,16 @@ class IBClient(object):
         frag = "fixedaddress?mac=" + mac_address + "&_return_fields=" + fields
         return self._get(frag)
 
+    # Create Functions
+
     def create_network(self, network, comment, fields):
         """
         Creates a new network
         """
         frag = ""
         data = ""
-        return _post(frag, data)
+        # return _post(frag, data)
+        return False
 
     def create_network_container(self):
         return False
@@ -240,7 +245,10 @@ class IBClient(object):
         """
         return False
 
-    # update functions to be defined below here
+    # update Functions
+    # To be defined below here
+
+    # Delete Functions
 
     def delete_network(self):
         return False
