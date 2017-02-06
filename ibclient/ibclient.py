@@ -125,10 +125,13 @@ class IBClient(object):
 
     def get_dhcp_servers(self):
         """
-        Gets the DHCP Servers
+        Gets the DHCP Servers (that are set to Enable DHCP)
         """
         frag = "member:dhcpproperties?_return_fields=enable_dhcp,host_name,ipv4addr"
         results = self._get(frag)
+        for i in xrange(len(results)):
+            if results[i][u'enable_dhcp'] is False:
+                results.pop(i)
         return results
 
     def get_network(self, network, fields=None):
