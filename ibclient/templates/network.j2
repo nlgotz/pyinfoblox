@@ -1,0 +1,15 @@
+{
+    "network": "{{network}}",
+    "network_view": "{{network_view}}",
+    "comment": "{{comment}}",
+    "members": 
+        [
+{% for member in dhcp_members %}
+            {
+                "_struct": "dhcpmember",
+                "ipv4addr": "{{member.ipv4addr}}",
+                "name":"{{member.host_name}}"
+            }{% if not loop.last %},{% endif %}
+{% endfor %}
+        ]
+}
