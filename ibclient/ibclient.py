@@ -35,7 +35,7 @@ class IBClient(object):
             r_json = r.json()
             if r.status_code == 200:
                 if len(r_json) > 0:
-                    return r_json[0]
+                    return r_json
                 else:
                     raise Exception("No object found for: " + frag)
             else:
@@ -58,7 +58,7 @@ class IBClient(object):
             r_json = r.json()
             if r.status_code == 201:
                 if len(r_json) > 0:
-                    return r_json
+                    return r_json[0]
                 else:
                     raise Exception("No object returned for: " + frag)
             else:
