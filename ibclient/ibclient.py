@@ -1,5 +1,4 @@
 import requests
-import json
 
 requests.packages.urllib3.disable_warnings()
 
@@ -118,7 +117,7 @@ class IBClient(object):
 
     def get_memberservers(self):
         """
-        Gets the Member Servers
+        Gets all of the member Infoblox servers
         """
         frag = "member"
         return self._get(frag)
@@ -156,12 +155,28 @@ class IBClient(object):
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
         return self._get(frag)
 
+    def get_next_available_network(self, network, cidr):
+        """
+        Get the next available network with appropriate mask from network Container
+        :param network: Network Container (including CIDR mask)
+        :param cidr: New network's cidr Address
+        """
+        container = self._get("networkcontainer?network=" + network)
+        ref = container.json()[0]['_ref']
+        find = ref.find(":")
+        ref = ref[0:find]
+
+        record = self._post(ref + '/?_function=next_available_network&cidr=' + str(cidr) + '&num=1', '')
+
+        return record.json()['networks'][0]
+
     def get_network_container(self, network, fields=None):
         """
         Gets the Network Container object
         :param network_container: network in CIDR format (x.x.x.x/yy)
+        :param fields: comma separated list of field names (optional)
         """
-        frag = "network_container?network=" + network
+        frag = "networkcontainer?network=" + network
         if fields:
             frag += "&_return_fields=" + fields
         return self._get(frag)
@@ -169,6 +184,7 @@ class IBClient(object):
     def get_dns_record(self, type, record, fields=None):
         """
         Gets the DNS record
+        If trying to get a PTR record, you need the in-addr.arpa address
         :param type: DNS Record Type (A, PTR, CNAME, MX, etc)
         :param name: Record name
         :param fields: comma separated list of field names (optional)
