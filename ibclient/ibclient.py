@@ -55,7 +55,7 @@ class IBClient(object):
         try:
             r = requests.post(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
             r_json = r.json()
-            if r.status_code == 201:
+            if r.status_code == 200 or r.status_code == 201:
                 if len(r_json) > 0:
                     return r_json
                 else:
