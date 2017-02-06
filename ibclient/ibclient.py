@@ -155,11 +155,12 @@ class IBClient(object):
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
         return self._get(frag)
 
-    def get_next_available_network(self, network, cidr):
+    def get_next_available_network(self, network, cidr, num=1):
         """
         Get the next available network with appropriate mask from network Container
         :param network: Network Container (including CIDR mask)
         :param cidr: New network's cidr Address
+        :param num: Number of networks needed
         """
         container = self._get("networkcontainer?network=" + network)
         print container
@@ -168,7 +169,7 @@ class IBClient(object):
         ref = ref[0:find]
         print ref
 
-        frag = "{0}/?_function=next_available_network&cidr={1}&num=1".format(ref, str(cidr))
+        frag = "{0}/?_function=next_available_network&cidr={1}&num={2}".format(ref, str(cidr), str(num))
         print frag
 
         record = self._post(frag, '')
