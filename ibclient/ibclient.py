@@ -166,6 +166,7 @@ class IBClient(object):
         ref = container[0]['_ref']
         find = ref.find(":")
         ref = ref[0:find]
+        print ref
 
         record = self._post(ref + '/?_function=next_available_network&cidr=' + str(cidr) + '&num=1', '')
 
