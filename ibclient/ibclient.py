@@ -27,6 +27,8 @@ class IBClient(object):
         self.api_version = api_version
         self.url = "https://{0}/wapi/v{1}/".format(self.server, self.api_version)
 
+    # Helper functions to create requests
+
     def _get(self, frag):
         """
         Sends GET requests to Infoblox Server
@@ -265,7 +267,7 @@ class IBClient(object):
         """
         return False
 
-    # update Functions
+    # Update Functions
     # To be defined below here
 
     # Delete Functions
