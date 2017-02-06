@@ -163,14 +163,11 @@ class IBClient(object):
         :param num: Number of networks needed
         """
         container = self._get("networkcontainer?network=" + network)
-        print container
         ref = container[0]['_ref']
         find = ref.find(":")
         ref = ref[0:find]
-        print ref
 
         frag = "{0}/?_function=next_available_network&cidr={1}&num={2}".format(ref, str(cidr), str(num))
-        print frag
 
         record = self._post(frag, '')
 
