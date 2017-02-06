@@ -1,4 +1,6 @@
 import requests
+from jinja2 import Environment, FileSystemLoader
+import os
 
 requests.packages.urllib3.disable_warnings()
 
@@ -61,10 +63,7 @@ class IBClient(object):
                 else:
                     raise Exception("No object returned for: " + frag)
             else:
-                if 'text' in r_json:
-                    raise Exception(r_json['text'])
-                else:
-                    r.raise_for_status()
+                r.raise_for_status()
         except ValueError:
             raise Exception(r)
         except Exception:
@@ -106,8 +105,8 @@ class IBClient(object):
                 else:
                     raise Exception("Error with: " + frag)
             else:
-                if 'text' in r_json:
-                    raise Exception(r_json['text'])
+                if 'text' in r_json.json():
+                    raise Exception(r_json.json()['text'])
                 else:
                     r.raise_for_status()
         except ValueError:
@@ -217,13 +216,22 @@ class IBClient(object):
         frag = "fixedaddress?mac=" + mac_address + "&_return_fields=" + fields
         return self._get(frag)
 
-    def create_network(self, network, comment, fields):
+    def create_network(self, network, comment):
         """
         Creates a new network
+        :param network: Network address with CIDR mask
+        :param comment: Network name that shows up in Infoblox
         """
-        frag = ""
-        data = ""
-        return _post(frag, data)
+        dhcp_members = self.get_dhcp_servers()
+        var = {'network': network, 'comment': comment, 'network_view':self.network_view, 'dhcp_members': dhcp_members}
+        
+        ENV = Environment(loader=FileSystemLoader(
+              os.path.join(os.path.dirname(__file__), "templates")))
+        template = ENV.get_template("network.j2")
+        
+        data = template.render(var)
+        
+        return self._post('network', data)
 
     def create_network_container(self):
         return False
