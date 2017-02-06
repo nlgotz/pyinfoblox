@@ -128,7 +128,7 @@ class IBClient(object):
         Gets the DHCP Servers
         """
         frag = "member:dhcpproperties?_return_fields=enable_dhcp,host_name,ipv4addr"
-        results = json.load(self._get(frag))
+        results = self._get(frag)
         return results
 
     def get_network(self, network, fields=None):
