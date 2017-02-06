@@ -162,6 +162,7 @@ class IBClient(object):
         :param cidr: New network's cidr Address
         """
         container = self._get("networkcontainer?network=" + network)
+        print container
         ref = container[0]['_ref']
         find = ref.find(":")
         ref = ref[0:find]
