@@ -168,7 +168,10 @@ class IBClient(object):
         ref = ref[0:find]
         print ref
 
-        record = self._post(ref + '/?_function=next_available_network&cidr=' + str(cidr) + '&num=1', '')
+        frag = "{0}/?_function=next_available_network&cidr={1}&num=1".format(ref, str(cidr))
+        print frag
+
+        record = self._post(frag, '')
 
         return record
 
