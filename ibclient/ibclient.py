@@ -199,6 +199,19 @@ class IBClient(object):
             frag += "&_return_fields=" + fields
         return self._get(frag)
 
+    def get_similar_dns_records(self, type, record, fields=None):
+        """
+        Gets similar DNS records
+        If trying to get a PTR record, you need the in-addr.arpa address
+        :param type: DNS Record Type (A, PTR, CNAME, MX, etc)
+        :param name: Record name
+        :param fields: comma separated list of field names (optional)
+        """
+        frag = "record:" + type + "?name~" + record
+        if fields:
+            frag += "&_return_fields=" + fields
+        return self._get(frag)
+
     def get_fixedaddress(self, address, fields=None):
         """
         Gets the Fixed Address Object
