@@ -281,7 +281,7 @@ class IBClient(object):
         frag = "networkcontainer"
         return False
 
-    def create_dhcp_range(self, network, start_addr, end_addr, exc_start, exc_end, options=None, template="dhcp.j2"):
+    def create_range(self, network, start_addr, end_addr, exc_start, exc_end, options=None, template="dhcp.j2"):
         """
         Create a new DHCP range
         :param network: Network address with CIDR mask
@@ -380,6 +380,45 @@ class IBClient(object):
             raise
 
     # Update Functions
+
+    def update_network(self, network):
+        return False
+
+    def update_network_container(self):
+        return False
+
+    def update_range(self):
+        return False
+
+    def update_fixedaddress(self):
+        return False
+
+    def update_ztp_fixedaddress(self):
+        return False
+
+    def update_a_record(self, address, fqdn):
+        """
+        Update DNS A record
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        return False
+
+    def update_ptr_record(self, address, fqdn):
+        """
+        Update DNS PTR record
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        return False
+
+    def update_dns_record(self, address, fqdn):
+        """
+        Updated DNS A and PTR record
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        return False
 
     # To be defined below here
 
