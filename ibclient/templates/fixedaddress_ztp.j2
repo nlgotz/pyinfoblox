@@ -1,0 +1,40 @@
+{
+    "ipv4addr": "func:nextavailableip:{{ network }}",
+    "mac": "{{ mac_addr }}",
+    "name": "{{ host }}",
+    "options":
+        [
+            {
+                "name": "TFTP_Server",
+                "num": 150,
+                "value": "{{ tftp_server }}",
+                "vendor_class": "DHCP"
+            },
+            {
+                "name": "vivso",
+                "num": 125,
+                "value": "00:00:00:09:12:05:10:61:75:74:6f:69:6e:73:74:61:6c:6c:5f:64:68:63:70",
+                "vendor_class": "DHCP"
+            },
+            {
+                "name": "tftp-server-name",
+                "num": 66,
+                "value": "{{ tftp_server }}",
+                "vendor_class": "DHCP"
+            },
+            {
+                "name": "bootfile-name",
+                "num": 67,
+                "value": "{{ cfg_file }}",
+                "vendor_class": "DHCP"
+            },
+            {
+                "name": "dhcp-lease-time",
+                "num": 51,
+                "use_option": False,
+                "value": "43200",
+                "vendor_class": "DHCP"
+            }
+        ]
+    }
+}

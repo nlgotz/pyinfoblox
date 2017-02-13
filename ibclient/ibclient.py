@@ -94,12 +94,12 @@ class IBClient(object):
         except Exception:
             raise
 
-    def _delete(self, frag, data=None):
+    def _delete(self, frag):
         """
         Sends DELETE requests to Infoblox Server
         """
         try:
-            r = requests.delete(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
+            r = requests.delete(self.url + frag, verify=self.verify_ssl, auth=self.credentials)
             r_json = r.json()
             if r.status_code == 200:
                 if len(r_json) > 0:
@@ -135,6 +135,13 @@ class IBClient(object):
             if results[i][u'enable_dhcp'] is False:
                 results.pop(i)
         return results
+
+    def get_dhcpfailover(self):
+        """
+        Gets the DHCP Failover Pair name.
+        Used for creating DHCP ranges
+        """
+        return self._get("dhcpfailover")
 
     def get_network(self, network, fields=None):
         """
@@ -187,6 +194,18 @@ class IBClient(object):
             frag += "&_return_fields=" + fields
         return self._get(frag)
 
+    def get_range(self, start_addr, end_addr, fields=None):
+        """
+        Get DHCP range by start and end addr
+        :param start_addr: First address in the DHCP range
+        :param end_addr: Last address in the DHCP range
+        :param fields: comma separated list of field names (optional)
+        """
+        frag = "range?start_addr={0}&end_addr={1}".format(start_addr, end_addr)
+        if fields:
+            frag += "&_return_fields=" + fields
+        return self._get(frag)
+
     def get_dns_record(self, type, record, fields=None):
         """
         Gets the DNS record
@@ -226,7 +245,7 @@ class IBClient(object):
     def get_fixedaddress_by_mac(self, mac_address):
         """
         Gets the Fixed Address Object by MAC Address
-        :param mac_address:
+        :param mac_address: MAC Address in xx:xx:xx:xx:xx:xx format
         """
         if not fields:
             fields = "ipv4addr,mac"
@@ -235,57 +254,187 @@ class IBClient(object):
 
     # Create Functions
 
-    def create_network(self, network, comment):
+    def create_network(self, network, comment, template="network.j2"):
         """
         Creates a new network
         :param network: Network address with CIDR mask
         :param comment: Network name that shows up in Infoblox
+        :param template: Template file to use (optional)
         """
         dhcp_members = self.get_dhcp_servers()
-        var = {'network': network, 'comment': comment, 'network_view':self.network_view, 'dhcp_members': dhcp_members}
-        
+        var = {'network': network, 'comment': comment, 'network_view': self.network_view, 'dhcp_members': dhcp_members}
+
         ENV = Environment(loader=FileSystemLoader(
-              os.path.join(os.path.dirname(__file__), "templates")))
+            os.path.join(os.path.dirname(__file__), "templates")))
         template = ENV.get_template("network.j2")
-        
+
         data = template.render(var)
-        
+
         return self._post('network', data)
 
-    def create_network_container(self):
-        return False
-
-    def create_dhcp_range(self):
-        return False
-
-    def create_fixedaddress(self):
-        return False
-
-    def create_dns_record(self):
+    def create_network_container(self, network, comment):
         """
-        Create a new DNS Record. This creates both the A and PTR records
+        Creates a network container
+        :param network: Network address with CIDR mask
+        :param comment: Network container name that shows up in infoblox
+        """
+        frag = "networkcontainer"
+        return False
+
+    def create_dhcp_range(self, network, start_addr, end_addr, exc_start, exc_end, options=None, template="dhcp.j2"):
+        """
+        Create a new DHCP range
+        :param network: Network address with CIDR mask
+        :param start_addr: DHCP range start address
+        :param end_addr: DHCP range end address
+        :param exc_start: DHCP Exclusion range start
+        :param exc_end: DHCP Exclusion range end
+        :param options: DHCP options in a dict array (optional)
+        :param template: Template file (not implemented yet)
+
+        Options format:
+        [{'name': name, 'num': dhcp_option_num, 'use_option': True, 'value': value}, { second dict }]
+        """
+        failover = self.get_dhcpfailover()
+        var = {
+            'failover': failover,
+            'network': network,
+            'start_addr': start_addr,
+            'end_addr': end_addr,
+            'exc_start': exc_start,
+            'exc_end': exc_end,
+            'options': options
+        }
+
+        ENV = Environment(loader=FileSystemLoader(
+            os.path.join(os.path.dirname(__file__), "templates")))
+        template = ENV.get_template("dhcp.j2")
+
+        data = template.render(var)
+
+        return self._post('range', data)
+
+    def create_fixedaddress(self, address, ):
+        """
+        Create a fixed Address
         """
         return False
+
+    def create_ztp_fixedaddress(self, network, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
+        """
+        """
+        if not vendor_code:
+            vendor_code = "00:00:00:09:12:05:10:61:75:74:6f:69:6e:73:74:61:6c:6c:5f:64:68:63:70"
+        var = {
+            'network': network,
+            'mac_addr': mac_addr,
+            'host': host,
+            'tftp_server': tftp_server,
+            'cfg_file': cfg_file,
+            'vendor_code': vendor_code
+        }
+
+        ENV = Environment(loader=FileSystemLoader(
+            os.path.join(os.path.dirname(__file__), "templates")))
+        template = ENV.get_template("fixedaddress_ztp.j2")
+
+        data = template.render(var)
+
+        return self._post('fixedaddress', data)
+
+    def create_a_record(self, address, fqdn):
+        """
+        Create a new DNS A record
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        data = '{"ipv4addr": "' + address + '","name": "' + fqdn + '","view": "' + self.dns_view + '"}'
+        return self._post('record:a', data)
+
+    def create_ptr_record(self, address, fqdn):
+        """
+        Create a new DNS PTR record
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        data = '{"ipv4addr": "' + address + '","ptrdname": "' + fqdn + '","view": "' + self.dns_view + '"}'
+        return self._post('record:ptr', data)
+
+    def create_dns_record(self, address, fqdn):
+        """
+        Create new DNS Records for a device (both A and PTR)
+        :param address: IPv4 Address (no CIDR notation)
+        :param fqdn: Hostname plus domain name
+        """
+        try:
+            self.create_a_record(address, fqdn)
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
+        try:
+            self.create_ptr_record(address, fqdn)
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
 
     # Update Functions
+
     # To be defined below here
 
     # Delete Functions
 
-    def delete_network(self):
-        return False
+    def delete_network(self, network):
+        """
+        Remove an existing network
+        :param network: network in CIDR format (x.x.x.x/yy)
+        """
+        objref = self.get_network(network)
+        network_ref = objref[0]["_ref"]
+        return self._delete(network_ref)
 
-    def delete_network_container(self):
-        return False
+    def delete_network_container(self, network_container):
+        """
+        Remove an existing network container
+        :param network_container: network in CIDR format (x.x.x.x/yy)
+        """
+        objref = self.get_network_container(network_container)
+        network_container_ref = objref[0]["_ref"]
+        return self._delete(network_container_ref)
 
-    def delete_dhcp_range(self):
-        return False
+    def delete_range(self, start_addr, end_addr):
+        """
+        Remove an existing DHCP range
+        :param start_addr: First address in the DHCP rangeFalse
+        """
+        objref = self.get_range(start_addr, end_addr)
+        range_ref = objref[0]["_ref"]
+        return self._delete(range_ref)
 
-    def delete_fixedaddress(self):
-        return False
+    def delete_fixedaddress(self, address):
+        """
+        Remove an existing fixedaddress
+        :param address: IP Address of the object
+        """
+        objref = self.get_fixedaddress(address)
+        fixaddress_ref = objref[0]["_ref"]
+        return self._delete(fixaddress_ref)
 
-    def delete_fixedaddress_by_mac(self):
-        return False
+    def delete_fixedaddress_by_mac(self, mac_address):
+        """
+        Remove an existing fixedaddress by MAC Address
+        :param mac_address: MAC Address in xx:xx:xx:xx:xx:xx format
+        """
+        objref = self.get_fixedaddress_by_mac(mac_address)
+        fixaddress_ref = objref[0]["_ref"]
+        return self._delete(fixaddress_ref)
 
-    def delete_dns_record(self):
-        return False
+    def delete_dns_records(self, fqdn):
+        """
+        Remove DNS (A&PTR) records by name
+        :param fqdn: Fully Qualified Domain Name for the host
+        """
+        objref = self.get_dns_record('a', fqdn)
+        dns_ref = objref[0]["_ref"]
+        return self._delete(dns_ref + "?remove_associated_ptr")
