@@ -157,6 +157,17 @@ class IBClient(object):
             fields = "network,netmask"
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
         return self._get(frag)
+        
+    def get_network_by_comment(self, comment, fields=None):
+        """
+        Returns matching networks that have a similar comment
+        :param comment:
+        :param fields: comma separated list of field names (optional)
+        """
+        frag = "network?comment~=" + comment
+        if fields:
+            frag += "&_return_fields=" + fields
+        return self._get(frag)
 
     def get_next_available_network(self, network, cidr, num=1):
         """
