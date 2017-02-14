@@ -31,7 +31,7 @@
     ],
     "extattrs": {},
 
-    "failover_association": "Fail-over-Pair",
+    "failover_association": "{{ failover.name }}",
     "fingerprint_filter_rules": [],
     "high_water_mark": 95,
     "high_water_mark_reset": 85,
@@ -61,6 +61,17 @@
             "value": "{{ start_addr }}",
             "vendor_class": "DHCP"
         }
+{% if options %},
+{% for option in options %}
+        {
+            "name": "{{ option.name }}",
+            "num": "{{ option.num }}",
+            "use_option": "{{ option.use_option }}",
+            "value": "{{option.value }}",
+            "vendor_class": "DHCP"
+        }{% if not loop.last %},{% endif %}
+{% endfor %}
+{% endif 5}
         ],
     "recycle_leases": true,
     "relay_agent_filter_rules": [],
