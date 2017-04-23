@@ -164,7 +164,7 @@ class IBClient(object):
             fields = "network,netmask"
         frag = "network?contains_address=" + ip_address + "&_return_fields=" + fields
         return self._get(frag)
-        
+
     def get_network_by_comment(self, comment, fields=None):
         """
         Returns matching networks that have a similar comment
@@ -325,11 +325,47 @@ class IBClient(object):
 
         return self._post('range', data)
 
-    def create_fixedaddress(self, address, ):
+    def create_reservedaddress(self, address, host):
         """
-        Create a fixed Address
+        Create a reserved address (does not require a MAC address)
+        :param address: IP Address for the fixed address
+        :param mac_addr: MAC Address of the device
+        :param host: Name of the device
         """
-        return False
+        var = {
+            'network': network,
+            'mac_addr': '00:00:00:00:00:00',
+            'host': host,
+        }
+
+        ENV = Environment(loader=FileSystemLoader(
+            os.path.join(os.path.dirname(__file__), "templates")))
+        template = ENV.get_template("fixedaddress.j2")
+
+        data = template.render(var)
+
+        return self._post('fixedaddress', data)
+
+    def create_fixedaddress(self, address, mac_addr, host):
+        """
+        Create a fixed address (requires MAC address)
+        :param address: IP Address for the fixed address
+        :param mac_addr: MAC Address of the device
+        :param host: Name of the device
+        """
+        var = {
+            'network': network,
+            'mac_addr': mac_addr,
+            'host': host,
+        }
+
+        ENV = Environment(loader=FileSystemLoader(
+            os.path.join(os.path.dirname(__file__), "templates")))
+        template = ENV.get_template("fixedaddress.j2")
+
+        data = template.render(var)
+
+        return self._post('fixedaddress', data)
 
     def create_ztp_fixedaddress(self, network, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
         """
