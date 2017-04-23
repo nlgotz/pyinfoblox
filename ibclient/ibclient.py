@@ -289,8 +289,8 @@ class IBClient(object):
         :param network: Network address with CIDR mask
         :param comment: Network container name that shows up in infoblox
         """
-        frag = "networkcontainer"
-        return False
+        data = '{"network": "' + network + '", "comment": "' + comment + '", "network_view": "' + self.network_view + '"}'
+        return self._post('networkcontainer', data)
 
     def create_range(self, network, start_addr, end_addr, exc_start, exc_end, options=None, template="dhcp.j2"):
         """
@@ -428,11 +428,31 @@ class IBClient(object):
 
     # Update Functions
 
-    def update_network(self, network):
-        return False
+    def update_network(self, network, comment):
+        """
+        Update Network Comment
+        :param network: Network address with CIDR mask
+        :param comment: Network name that shows up in Infoblox
+        """
+        # Get the network _ref information that is required for the update call
+        objref = self.get_network(network)
+        net_ref = objref[0]["_ref"]
+        # Format the data to set the new comment
+        data = '{"comment": " ' + comment + '"}'
+        return self._put('network/' + net_ref, data)
 
     def update_network_container(self):
-        return False
+        """
+        Updates a network container
+        :param network: Network address with CIDR mask
+        :param comment: Network container name that shows up in infoblox
+        """
+        # Get the network _ref information that is required for the update call
+        objref = self.get_network_container(network)
+        net_ref = objref[0]["_ref"]
+        # Format the data to set the new comment
+        data = '{"comment": " ' + comment + '"}'
+        return self._put('networkcontainer/' + net_ref, data)
 
     def update_range(self):
         return False
@@ -442,32 +462,6 @@ class IBClient(object):
 
     def update_ztp_fixedaddress(self):
         return False
-
-    def update_a_record(self, address, fqdn):
-        """
-        Update DNS A record
-        :param address: IPv4 Address (no CIDR notation)
-        :param fqdn: Hostname plus domain name
-        """
-        return False
-
-    def update_ptr_record(self, address, fqdn):
-        """
-        Update DNS PTR record
-        :param address: IPv4 Address (no CIDR notation)
-        :param fqdn: Hostname plus domain name
-        """
-        return False
-
-    def update_dns_record(self, address, fqdn):
-        """
-        Updated DNS A and PTR record
-        :param address: IPv4 Address (no CIDR notation)
-        :param fqdn: Hostname plus domain name
-        """
-        return False
-
-    # To be defined below here
 
     # Delete Functions
 
