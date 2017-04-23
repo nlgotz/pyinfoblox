@@ -441,7 +441,7 @@ class IBClient(object):
         data = '{"comment": " ' + comment + '"}'
         return self._put('network/' + net_ref, data)
 
-    def update_network_container(self):
+    def update_network_container(self, network, comment):
         """
         Updates a network container
         :param network: Network address with CIDR mask
@@ -454,10 +454,10 @@ class IBClient(object):
         data = '{"comment": " ' + comment + '"}'
         return self._put('networkcontainer/' + net_ref, data)
 
-    def update_range(self):
+    def update_fixedaddress_mac_addr(self):
         return False
 
-    def update_fixedaddress(self):
+    def update_fixedaddress_name(self):
         return False
 
     def update_ztp_fixedaddress(self):
