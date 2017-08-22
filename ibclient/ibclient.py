@@ -328,7 +328,7 @@ class IBClient(object):
     def create_reservedaddress(self, address, host):
         """
         Create a reserved address (does not require a MAC address)
-        :param address: IP Address for the fixed address
+        :param address: IP Address for the reserved address
         :param mac_addr: MAC Address of the device
         :param host: Name of the device
         """
@@ -454,14 +454,30 @@ class IBClient(object):
         data = '{"comment": " ' + comment + '"}'
         return self._put('networkcontainer/' + net_ref, data)
 
-    def update_fixedaddress_mac_addr(self):
-        return False
+    def update_fixedaddress_by_ip_addr(self, address, mac_addr, host=None):
+        """
+        Update mac address and host name of a fixed address by IP address
+        :param address: IP address of the fixed address
+        :param mac_addr: MAC Address of the device
+        :param host: device host name of the fixed address (optional)
+        """
+        objref = self.get_fixedaddress(address)
+        ref = objref[0]["_ref"]
+        if not host:
+            host = objref[0]["name"]
+        data = '{"mac": "' + mac_addr + '","name": " ' + host + '"}'
+        return self._put('fixedaddress/' + ref, data)
 
-    def update_fixedaddress_name(self):
-        return False
-
-    def update_ztp_fixedaddress(self):
-        return False
+    def update_fixedaddress_by_mac_addr(self, mac_addr, new_host):
+        """
+        Updates the host name of a fixed address by mac address
+        :param mac_addr: MAC address of the device
+        :param new_host: New name of the device
+        """
+        objref = self.get_fixedaddress_by_mac(mac_addr)
+        ref = objref[0]["ref"]
+        data = '{"name": "' + new_host + '"}'
+        return self._put('fixedaddress/' + ref, data)
 
     # Delete Functions
 
