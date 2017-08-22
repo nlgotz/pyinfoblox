@@ -461,7 +461,7 @@ class IBClient(object):
         :param mac_addr: MAC Address of the device
         :param host: device host name of the fixed address (optional)
         """
-        objref = self.get_fixedaddress(address)
+        objref = self.get_fixedaddress(address, "name")
         ref = objref[0]["_ref"]
         if not host:
             host = objref[0]["name"]
