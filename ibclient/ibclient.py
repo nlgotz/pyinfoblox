@@ -466,7 +466,7 @@ class IBClient(object):
         if not host:
             host = objref[0]["name"]
         data = '{"mac": "' + mac_addr + '","name": " ' + host + '"}'
-        return self._put('fixedaddress/' + ref, data)
+        return self._put(ref, data)
 
     def update_fixedaddress_by_mac_addr(self, mac_addr, new_host):
         """
@@ -477,7 +477,7 @@ class IBClient(object):
         objref = self.get_fixedaddress_by_mac(mac_addr)
         ref = objref[0]["ref"]
         data = '{"name": "' + new_host + '"}'
-        return self._put('fixedaddress/' + ref, data)
+        return self._put(ref, data)
 
     # Delete Functions
 
