@@ -23,11 +23,12 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,
     package_data={
-        'infobloxapi': ['templates/*.j2'],
+        'ibclient': ['templates/*.j2'],
     },
     zip_safe=False,
     install_requires=[
         'requests',
+        'jinja2'
     ],
     setup_requires=[],
     namespace_packages=['ibclient'],
