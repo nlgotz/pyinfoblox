@@ -465,7 +465,7 @@ class IBClient(object):
         ref = objref[0]["_ref"]
         if not host:
             host = objref[0]["name"]
-        data = '{"mac": "' + mac_addr + '","name": " ' + host + '"}'
+        data = '{"mac": "' + mac_addr + '","name": "' + host + '"}'
         return self._put(ref, data)
 
     def update_fixedaddress_by_mac_addr(self, mac_addr, new_host):
