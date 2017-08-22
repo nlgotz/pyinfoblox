@@ -7,7 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 class IBClient(object):
 
-    def __init__(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
+    def __init__(self, server, username, password, api_version="2.3.1", dns_view="default", network_view="default", verify_ssl=False):
         """
         Class initialization method
         :param server: Infoblox Gridmaster server (either IP or DNS)
