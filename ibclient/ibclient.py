@@ -253,7 +253,7 @@ class IBClient(object):
         frag = "fixedaddress?ipv4addr=" + address + "&_return_fields=" + fields
         return self._get(frag)
 
-    def get_fixedaddress_by_mac(self, mac_address):
+    def get_fixedaddress_by_mac(self, mac_address, fields=None):
         """
         Gets the Fixed Address Object by MAC Address
         :param mac_address: MAC Address in xx:xx:xx:xx:xx:xx format
