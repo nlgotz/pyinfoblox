@@ -243,6 +243,16 @@ class IBClient(object):
             frag += "&_return_fields=" + fields
         return self._get(frag)
 
+    def get_reservedaddress(self, address, fields=None):
+        """
+        Gets the Reserved Address Object
+        :param address: IP address of the object
+        """
+        if not fields:
+            fields = "ipv4addr"
+        frag = "reservedaddress?ipv4addr=" + address + "&_return_fields=" + fields
+        return self._get(frag)
+
     def get_fixedaddress(self, address, fields=None):
         """
         Gets the Fixed Address Object
@@ -454,6 +464,17 @@ class IBClient(object):
         data = '{"comment": " ' + comment + '"}'
         return self._put('networkcontainer/' + net_ref, data)
 
+    def update_reservedaddress(self, address, host):
+        """
+        Update reserved address
+        :param address: IP address of the reserved address
+        :param host: new device hostname of the reserved address
+        """
+        objref = self.get_reservedaddress(address, "name")
+        ref = objref[0]["_ref"]
+        data = '{"name": "' + host + '"}'
+        return self._put(ref, data)
+
     def update_fixedaddress_by_ip_addr(self, address, mac_addr, host=None):
         """
         Update mac address and host name of a fixed address by IP address
@@ -507,6 +528,15 @@ class IBClient(object):
         objref = self.get_range(start_addr, end_addr)
         range_ref = objref[0]["_ref"]
         return self._delete(range_ref)
+
+    def delete_reservedaddress(self, address):
+        """
+        Remove an existing reserved address
+        :param address: IP address of the object
+        """
+        objref = self.get_reservedaddress(address, "name")
+        ref = objref[0]["_ref"]
+        return self._delete(ref)
 
     def delete_fixedaddress(self, address):
         """
