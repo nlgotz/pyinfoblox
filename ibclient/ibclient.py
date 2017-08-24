@@ -7,7 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 class IBClient(object):
 
-    def __init__(self, server, username, password, api_version, dns_view="default", network_view="default", verify_ssl=False):
+    def __init__(self, server, username, password, api_version="2.3.1", dns_view="default", network_view="default", verify_ssl=False):
         """
         Class initialization method
         :param server: Infoblox Gridmaster server (either IP or DNS)
@@ -190,9 +190,7 @@ class IBClient(object):
 
         frag = "{0}/?_function=next_available_network&cidr={1}&num={2}".format(ref, str(cidr), str(num))
 
-        record = self._post(frag, '')
-
-        return record
+        return self._post(frag, '')
 
     def get_network_container(self, network, fields=None):
         """
@@ -204,6 +202,16 @@ class IBClient(object):
         if fields:
             frag += "&_return_fields=" + fields
         return self._get(frag)
+
+    def get_next_available_address(self, network, num=1):
+        """
+        Get the next available IP address in a network
+        :param network: Network that you want an IP address from
+        """
+        networkref = self.get_network(network)[0]['_ref']
+
+        frag = "{0}/?_function=next_available_ip&num={1}".format(networkref, str(num))
+        return self._post(frag, '')
 
     def get_range(self, start_addr, end_addr, fields=None):
         """
@@ -241,6 +249,16 @@ class IBClient(object):
         frag = "record:" + type + "?name~" + record
         if fields:
             frag += "&_return_fields=" + fields
+        return self._get(frag)
+
+    def get_reservedaddress(self, address, fields=None):
+        """
+        Gets the Reserved Address Object
+        :param address: IP address of the object
+        """
+        if not fields:
+            fields = "ipv4addr"
+        frag = "reservedaddress?ipv4addr=" + address + "&_return_fields=" + fields
         return self._get(frag)
 
     def get_fixedaddress(self, address, fields=None):
@@ -367,7 +385,7 @@ class IBClient(object):
 
         return self._post('fixedaddress', data)
 
-    def create_ztp_fixedaddress(self, network, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
+    def create_ztp_fixedaddress(self, address, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
         """
         """
         if not vendor_code:
@@ -454,6 +472,17 @@ class IBClient(object):
         data = '{"comment": " ' + comment + '"}'
         return self._put('networkcontainer/' + net_ref, data)
 
+    def update_reservedaddress(self, address, host):
+        """
+        Update reserved address
+        :param address: IP address of the reserved address
+        :param host: new device hostname of the reserved address
+        """
+        objref = self.get_reservedaddress(address, "name")
+        ref = objref[0]["_ref"]
+        data = '{"name": "' + host + '"}'
+        return self._put(ref, data)
+
     def update_fixedaddress_by_ip_addr(self, address, mac_addr, host=None):
         """
         Update mac address and host name of a fixed address by IP address
@@ -507,6 +536,15 @@ class IBClient(object):
         objref = self.get_range(start_addr, end_addr)
         range_ref = objref[0]["_ref"]
         return self._delete(range_ref)
+
+    def delete_reservedaddress(self, address):
+        """
+        Remove an existing reserved address
+        :param address: IP address of the object
+        """
+        objref = self.get_reservedaddress(address, "name")
+        ref = objref[0]["_ref"]
+        return self._delete(ref)
 
     def delete_fixedaddress(self, address):
         """
