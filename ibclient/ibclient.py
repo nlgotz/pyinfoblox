@@ -205,6 +205,16 @@ class IBClient(object):
             frag += "&_return_fields=" + fields
         return self._get(frag)
 
+    def get_next_available_address(self, network, num=1):
+        """
+        Get the next available IP address in a network
+        :param network: Network that you want an IP address from
+        """
+        networkref = self.get_network(network)[0]['_ref']
+
+        frag = "{0}/?_function=next_available_ip&num={1}".format(networkref, str(num))
+        return self._post(frag, '')
+
     def get_range(self, start_addr, end_addr, fields=None):
         """
         Get DHCP range by start and end addr
@@ -377,7 +387,7 @@ class IBClient(object):
 
         return self._post('fixedaddress', data)
 
-    def create_ztp_fixedaddress(self, network, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
+    def create_ztp_fixedaddress(self, address, mac_addr, host, tftp_server, cfg_file, vendor_code=None):
         """
         """
         if not vendor_code:
