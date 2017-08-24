@@ -190,9 +190,7 @@ class IBClient(object):
 
         frag = "{0}/?_function=next_available_network&cidr={1}&num={2}".format(ref, str(cidr), str(num))
 
-        record = self._post(frag, '')
-
-        return record
+        return self._post(frag, '')
 
     def get_network_container(self, network, fields=None):
         """
