@@ -324,7 +324,7 @@ class IBClient(object):
         Options format:
         [{'name': name, 'num': dhcp_option_num, 'use_option': True, 'value': value}, { second dict }]
         """
-        failover = self.get_dhcpfailover()
+        failover = self.get_dhcpfailover()[0]["name"]
         var = {
             'failover': failover,
             'network': network,
