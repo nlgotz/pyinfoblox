@@ -351,7 +351,7 @@ class IBClient(object):
         :param host: Name of the device
         """
         var = {
-            'network': network,
+            'address': address,
             'mac_addr': '00:00:00:00:00:00',
             'host': host,
         }
@@ -372,7 +372,7 @@ class IBClient(object):
         :param host: Name of the device
         """
         var = {
-            'network': network,
+            'address': address,
             'mac_addr': mac_addr,
             'host': host,
         }
