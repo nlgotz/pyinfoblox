@@ -343,7 +343,7 @@ class IBClient(object):
 
         return self._post('range', data)
 
-    def create_reservedaddress(self, address, host):
+    def create_reservedaddress(self, address, host, comment=""):
         """
         Create a reserved address (does not require a MAC address)
         :param address: IP Address for the reserved address
@@ -354,6 +354,7 @@ class IBClient(object):
             'address': address,
             'mac_addr': '00:00:00:00:00:00',
             'host': host,
+            'comment': comment,
         }
 
         ENV = Environment(loader=FileSystemLoader(
@@ -364,7 +365,7 @@ class IBClient(object):
 
         return self._post('fixedaddress', data)
 
-    def create_fixedaddress(self, address, mac_addr, host):
+    def create_fixedaddress(self, address, mac_addr, host, comment=""):
         """
         Create a fixed address (requires MAC address)
         :param address: IP Address for the fixed address
@@ -375,6 +376,7 @@ class IBClient(object):
             'address': address,
             'mac_addr': mac_addr,
             'host': host,
+            'comment': comment,
         }
 
         ENV = Environment(loader=FileSystemLoader(
