@@ -6,8 +6,8 @@
     "logic_filter_rules": [
 {% for filter in filters %}
     {
-        "filter": {{ filter.name }},
-        "type": {{ filter.type }}
+        "filter": "{{ filter.name }}",
+        "type": "{{ filter.type }}"
     }{% if not loop.last %},{% endif %}
 {% endfor %}
     ],
