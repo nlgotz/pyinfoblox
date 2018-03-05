@@ -71,6 +71,23 @@ class IBClient(object):
         except Exception:
             raise
 
+    def _post_no_data(self, frag, data=None):
+        """
+        Sends POST requests to Infoblox Server.
+        Creates a new Infoblox object
+        """
+        try:
+            r = requests.post(self.url + frag, data=data, verify=self.verify_ssl, auth=self.credentials)
+            r_json = r.json()
+            if r.status_code == 200 or r.status_code == 201:
+                return r_json
+            else:
+                r.raise_for_status()
+        except ValueError:
+            raise Exception(r)
+        except Exception:
+            raise
+            
     def _put(self, frag, data=None):
         """
         Sends PUT requests to Infoblox Server
@@ -592,6 +609,5 @@ class IBClient(object):
         """
         objref = self.get_grid()
         grid_ref = objref[0]["_ref"]
-        self._post(grid_ref + "?_function=restartservices")
-        return "Grid Restarted"
+        return self._post_no_data(grid_ref + "?_function=restartservices")
         
