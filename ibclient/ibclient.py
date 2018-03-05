@@ -283,15 +283,16 @@ class IBClient(object):
 
     # Create Functions
 
-    def create_network(self, network, comment, template="network.j2"):
+    def create_network(self, network, comment, template="network.j2", filters=""):
         """
         Creates a new network
         :param network: Network address with CIDR mask
         :param comment: Network name that shows up in Infoblox
         :param template: Template file to use (optional)
+        :param filters: Add Logic Filters (optional)
         """
         dhcp_members = self.get_dhcp_servers()
-        var = {'network': network, 'comment': comment, 'network_view': self.network_view, 'dhcp_members': dhcp_members}
+        var = {'network': network, 'comment': comment, 'network_view': self.network_view, 'filters': filters, 'dhcp_members': dhcp_members}
 
         ENV = Environment(loader=FileSystemLoader(
             os.path.join(os.path.dirname(__file__), "templates")))
