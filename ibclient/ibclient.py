@@ -117,6 +117,13 @@ class IBClient(object):
             raise
 
     # Get Functions
+    
+    def get_grid(self):
+        """
+        Gets the grid
+        """
+        frag = "grid"
+        return self._get(frag)
 
     def get_memberservers(self):
         """
@@ -575,3 +582,14 @@ class IBClient(object):
         objref = self.get_dns_record('a', fqdn)
         dns_ref = objref[0]["_ref"]
         return self._delete(dns_ref + "?remove_associated_ptr")
+    
+    # Functions
+    
+    def restart_grid(self):
+        """
+        Restart IPAM Grid. Like the yellow bar at the top.
+        """
+        objref = self.get_grid()
+        grid_ref = objref[0]["_ref"]
+        return self._post(grid_ref + "?_function=restartservices")
+        
