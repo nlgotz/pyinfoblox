@@ -2,7 +2,7 @@
     "network": "{{network}}",
     "network_view": "{{network_view}}",
     "comment": "{{comment}}",
-{% if filters is defined %}
+{% if filters is defined and filters != "" %}
     "authority": true,
     "use_authority": true,
     "use_logic_filter_rules": true,
