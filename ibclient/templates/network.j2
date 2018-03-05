@@ -2,6 +2,15 @@
     "network": "{{network}}",
     "network_view": "{{network_view}}",
     "comment": "{{comment}}",
+    "use_authority": true,
+    "logic_filter_rules": [
+{% for filter in filters %}
+    {
+        "filter": {{ filter.name }},
+        "type": {{ filter.type }}
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+    ],
     "members": 
         [
 {% for member in dhcp_members %}
