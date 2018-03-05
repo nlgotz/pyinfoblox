@@ -588,8 +588,10 @@ class IBClient(object):
     def restart_grid(self):
         """
         Restart IPAM Grid. Like the yellow bar at the top.
+        Post doesn't return any results, so having to fudge...
         """
         objref = self.get_grid()
         grid_ref = objref[0]["_ref"]
-        return self._post(grid_ref + "?_function=restartservices")
+        self._post(grid_ref + "?_function=restartservices")
+        return "Grid Restarted"
         
