@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='ibclient',
-    version='0.0.7.1',
+    version='0.0.7.2',
     description="Access Infoblox API",
     classifiers=[],
     keywords='infoblox api infobloxapi',
